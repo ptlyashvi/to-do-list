@@ -1,47 +1,59 @@
-import React, { useState } from "react"
-import "./login.css"
-import axios from "axios"
-import { redirect, useNavigate } from "react-router-dom"
+import React, { useState } from "react";
+import "./login.css";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = (props) => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const [user, setUser] = useState({
+    email: "",
+    password: "",
+  });
 
-    const [user, setUser] = useState(
-        {
-            email: "",
-            password: "",
-        })
-
-    const handleChange = e => {
-        const { name, value } = e.target
-        setUser({
-            ...user,
-            [name]: value
-        })
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser({
+      ...user,
+      [name]: value,
+    });
+  };
+  const login = async () => {
+    try {
+      console.log("hello");
+      await axios.post("http://localhost:9002/login", user);
+      localStorage.setItem("loggedin", true);
+      window.location.href = "/";
+    } catch (error) {
+      alert("sign in error");
     }
-    const login = async () => {
-        try {
+  };
+  return (
+    <div className="login">
+      <h1>Login</h1>
+      <input
+        type="text"
+        name="email"
+        value={user.email}
+        onChange={handleChange}
+        placeholder="Enter your Email"
+      ></input>
+      <input
+        type="password"
+        name="password"
+        value={user.password}
+        onChange={handleChange}
+        placeholder="Enter your Password"
+      ></input>
+      <div className="button" onClick={login}>
+        Login
+      </div>
+      <div>or</div>
+      <div className="button" onClick={() => navigate("/register")}>
+        Register
+      </div>
+    </div>
+  );
+};
 
-            var res = await axios.post("http://localhost:9002/login", user);
-            // alert(res.data.message);
-            props.onLogin(res.data.user);
-            navigate("/");
-
-        } catch (error) {
-            alert("sign in error")
-        }
-    }
-    return (
-        <div className="login">
-            <h1>Login</h1>
-            <input type="text" name="email" value={user.email} onChange={handleChange} placeholder="Enter your Email"></input>
-            <input type="password" name="password" value={user.password} onChange={handleChange} placeholder="Enter your Password" ></input>
-            <button className="button" onClick={login}>Login</button>
-            <div>or</div>
-            <div className="button" onClick={() => navigate("/register")}>Register</div>
-        </div>
-    )
-}
-
-export default Login
+export default Login;
